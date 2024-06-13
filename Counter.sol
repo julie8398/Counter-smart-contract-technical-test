@@ -10,7 +10,6 @@ contract Counter {
         owner = msg.sender;
     }
 
-
     event Incremented(uint value);
     event Decremented(uint value);
     event IncrementedBy(uint value);
@@ -43,6 +42,4 @@ contract Counter {
         count = 0;
         emit Reseted();
     }
-
-
 }
