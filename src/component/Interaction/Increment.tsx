@@ -3,7 +3,7 @@ import { Status } from '@/utils/status';
 import { ABI_INCREMENT } from '@/abi/increment';
 
 export function Increment() {
-	const { writeContract, data, error, status } = useWriteContract()
+	const { writeContract, error, status } = useWriteContract()
 
 	function increment() {
 		writeContract({

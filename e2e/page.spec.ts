@@ -190,3 +190,74 @@ test.describe('decrement', () => {
 	});
 })
 
+test.describe('incrementBy', () => {
+	test('fait les bons appels', async ({ page }) => {
+		let callCount = 0;
+
+		await page.route(polygonAmoyUrl, async route => {
+			const payload = JSON.parse(<string>route.request().postData());
+
+			callCount === 1 && expect(payload).toMatchObject({
+				method: "eth_call",
+				params: [expect.objectContaining({
+					data: expect.any(String),
+					from: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+					to: "0x5f100C3e6f8fA7e4E76918dCad61c3B6f65709A3",
+				}), "latest"],
+			})
+			callCount === 2 && expect(payload).toMatchObject({
+				method: "eth_sendTransaction",
+				params: [expect.objectContaining({
+					data: expect.any(String),
+					from: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+					to: "0x5f100C3e6f8fA7e4E76918dCad61c3B6f65709A3",
+				})],
+			});
+			callCount++
+			await route.fulfill({ json: { jsonrpc: "2.0", id: 0, result: "0x" } });
+		});
+
+		await page.goto("/");
+		await page.getByRole("button", { name: "Mock Connector" }).click();
+
+		await page.getByRole("spinbutton", { name: "Nombre a incrémenter:" }).fill('4');
+		await page.getByRole("button", { name: "Incrémenter de" }).click();
+
+		await expect(page.getByText('l‘incrementation a bien fonctionnée')).toBeVisible();
+	});
+
+	test('lorsqu‘il y a une erreur, affiche l‘erreur', async ({ page }) => {
+		await page.route(polygonAmoyUrl, async route => {
+			await route.fulfill({
+				json: {
+					error: { code: -32000, message: "unknown account" },
+					id: 1,
+					jsonrpc: "2.0",
+				},
+			});
+		});
+
+		await page.goto("/");
+		await page.getByRole("button", { name: "Mock Connector" }).click();
+
+		await page.getByRole("spinbutton", { name: "Nombre a incrémenter:" }).fill('4');
+		await page.getByRole("button", { name: "Incrémenter de" }).click();
+
+		await expect(page.getByText('Une erreur est apparu lors de l‘incrémentation:')).toBeVisible();
+	});
+
+	test('lorsque l‘appel est en succès, affiche un message de succès', async ({ page }) => {
+		await page.route(polygonAmoyUrl, async route => {
+			await route.fulfill({ json: { jsonrpc: "2.0", id: 0, result: "0x" } });
+		});
+
+		await page.goto("/");
+		await page.getByRole("button", { name: "Mock Connector" }).click();
+
+		await page.getByRole("spinbutton", { name: "Nombre a incrémenter:" }).fill('4');
+		await page.getByRole("button", { name: "Incrémenter de" }).click();
+
+		await expect(page.getByText('l‘incrementation a bien fonctionnée')).toBeVisible();
+	});
+})
+
