@@ -1,6 +1,7 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { ConnexionStatus } from '@/utils/status';
 
+const METAMASK_TYPE = 'metaMask';
 export function Connect() {
 	const account = useAccount()
 
@@ -22,9 +23,10 @@ export function Connect() {
 		<div>
 			<h2>Connexion</h2>
 			{connectors.map((connector) => (
-				<button key={connector.uid} onClick={() => connect({ connector })} type="button">
+				connector.type === METAMASK_TYPE &&
+        <button key={connector.uid} onClick={() => connect({ connector })} type="button">
 					{connector.name}
-				</button>
+        </button>
 			))}
 			<div>{error?.message}</div>
 		</div>
