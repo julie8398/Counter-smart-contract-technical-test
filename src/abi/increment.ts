@@ -13,3 +13,11 @@ export const ABI_DECREMENT = {
 	type: 'function',
 	stateMutability: 'nonpayable',
 }
+
+export const ABI_GET_COUNT = {
+	name: 'count',
+	"inputs": [],
+	"outputs": [{ type: "uint256" }],
+	type: 'function',
+	stateMutability: 'view',
+}
