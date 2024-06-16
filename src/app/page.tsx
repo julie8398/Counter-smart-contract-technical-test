@@ -1,6 +1,6 @@
 'use client'
 
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useAccount, useConnect, useDisconnect, useWriteContract } from 'wagmi'
 import { QueryClient } from '@tanstack/react-query';
 
 function App() {
@@ -8,6 +8,23 @@ function App() {
 
 	const { connectors, connect, status, error } = useConnect()
 	const { disconnect } = useDisconnect()
+	const { writeContract, data, error: errorWriteContract } = useWriteContract()
+
+	function increment() {
+		console.log('increment')
+		writeContract({
+			address: '0x5f100C3e6f8fA7e4E76918dCad61c3B6f65709A3',
+			abi: [{
+				name: 'increment',
+				"inputs": [],
+				"outputs": [],
+				type: 'function',
+				stateMutability: 'nonpayable',
+			}],
+			functionName: 'increment',
+		})
+		console.log(data)
+	}
 
 	return (
 		<>
@@ -33,6 +50,10 @@ function App() {
 				))}
 				<div>{status}</div>
 				<div>{error?.message}</div>
+			</div>
+			<div>
+				<button onClick={increment}>Increment</button>
+				{errorWriteContract?.message}
 			</div>
 		</>
 	)
