@@ -8,7 +8,7 @@ function App() {
 
 	const { connectors, connect, status, error } = useConnect()
 	const { disconnect } = useDisconnect()
-	const { writeContract, data, error: errorWriteContract } = useWriteContract()
+	const { writeContract, data, error: errorWriteContract, status: statusWriteContract } = useWriteContract()
 
 	function increment() {
 		console.log('increment')
@@ -23,7 +23,6 @@ function App() {
 			}],
 			functionName: 'increment',
 		})
-		console.log(data)
 	}
 
 	return (
@@ -31,9 +30,9 @@ function App() {
 			<div>
 				<h2>Account</h2>
 				<div>
-					status: {account.status}
-					addresses: {JSON.stringify(account.addresses)}
-					chainId: {account.chainId}
+					<div>status: {account.status}</div>
+					<div>addresses: {JSON.stringify(account.addresses)}</div>
+					<div>chainId: {account.chainId}</div>
 				</div>
 				{account.status === 'connected' && (
 					<button type="button" onClick={() => disconnect()}>
@@ -53,7 +52,8 @@ function App() {
 			</div>
 			<div>
 				<button onClick={increment}>Increment</button>
-				{errorWriteContract?.message}
+				{statusWriteContract === 'error' && <div>Une erreur est apparu lors de l‘incrémentation: {errorWriteContract?.message}</div>}
+				{statusWriteContract === 'success' && <div>l‘incrementation a bien fonctionnée</div>}
 			</div>
 		</>
 	)
