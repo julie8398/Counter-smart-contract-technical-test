@@ -6,6 +6,7 @@ import { Increment } from '@/component/Interaction/Increment';
 import { Decrement } from '@/component/Interaction/Decrement';
 import { Count } from '@/component/Count';
 import { IncrementBy } from '@/component/Interaction/IncrementBy';
+import { DecrementBy } from '@/component/Interaction/DecrementBy';
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
 			<Increment/>
 			<Decrement/>
 			<IncrementBy/>
+			<DecrementBy/>
 		</>
 	)
 }
