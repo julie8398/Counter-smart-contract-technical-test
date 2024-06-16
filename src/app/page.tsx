@@ -3,6 +3,7 @@
 import { Connect } from '@/component/Connect';
 import React from 'react';
 import { Increment } from '@/component/Increment';
+import { Decrement } from '@/component/Decrement';
 
 function App() {
 
@@ -11,6 +12,7 @@ function App() {
 			<h1>Counter</h1>
 			<Connect/>
 			<Increment/>
+			<Decrement/>
 		</>
 	)
 }

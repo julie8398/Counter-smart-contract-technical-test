@@ -18,7 +18,9 @@ test.describe('increment',()=>{
 		let callCount = 0;
 
 		await page.route('https://rpc-amoy.polygon.technology/', async route => {
-			callCount === 0 && expect(JSON.parse(<string>route.request().postData())).toMatchObject({
+			const payload = JSON.parse(<string>route.request().postData());
+
+			callCount === 0 && expect(payload).toMatchObject({
 				method: "eth_call",
 				params: [{
 					//NOTE (16/06/2024): increment() encodé
@@ -27,7 +29,7 @@ test.describe('increment',()=>{
 					to: "0x5f100C3e6f8fA7e4E76918dCad61c3B6f65709A3",
 				}, "latest"],
 			})
-			callCount === 1 && expect(JSON.parse(<string>route.request().postData())).toMatchObject({
+			callCount === 1 && expect(payload).toMatchObject({
 				method: "eth_sendTransaction",
 				params: [{
 					data: "0xd09de08a",
@@ -79,6 +81,76 @@ test.describe('increment',()=>{
 		await page.getByRole("button", { name: "increment" }).click();
 
 		await expect(page.getByText('l‘incrementation a bien fonctionnée')).toBeVisible();
+	});
+})
+
+test.describe('decrement',()=>{
+	test('fait les bons appels', async ({ page }) => {
+		let callCount = 0;
+		await page.route('https://rpc-amoy.polygon.technology/', async route => {
+			const payload = JSON.parse(<string>route.request().postData());
+
+			callCount === 0 && expect(payload).toMatchObject({
+				method: "eth_call",
+				params: [{
+					//NOTE (16/06/2024): decrement() encodé
+					data: "b5002fa2",
+					from: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+					to: "0x5f100C3e6f8fA7e4E76918dCad61c3B6f65709A3",
+				}, "latest"],
+			})
+			callCount === 1 && expect(payload).toMatchObject({
+				method: "eth_sendTransaction",
+				params: [{
+					data: "b5002fa2",
+					from: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+					to: "0x5f100C3e6f8fA7e4E76918dCad61c3B6f65709A3",
+				}],
+			});
+			callCount++
+			await route.fulfill({ json: { jsonrpc: "2.0", id: 0, result: "0x" } });
+		});
+
+		await page.goto("/");
+		await page.getByRole("button", { name: "Mock Connector" }).click();
+
+		await page.getByRole("button", { name: "decrement" }).click();
+	});
+
+	test('lorsqu‘il y a une erreur, affiche l‘erreur', async ({ page }) => {
+		let callCount = 0;
+
+		await page.route('https://rpc-amoy.polygon.technology/', async route => {
+			callCount === 0 && await route.fulfill({ json: { jsonrpc: "2.0", id: 0, result: "0x" } });
+			callCount === 1 && await route.fulfill({
+				json: {
+					error: { code: -32000, message: "unknown account" },
+					id: 1,
+					jsonrpc: "2.0",
+				},
+			});
+			callCount++
+		});
+
+		await page.goto("/");
+		await page.getByRole("button", { name: "Mock Connector" }).click();
+
+		await page.getByRole("button", { name: "decrement" }).click();
+
+		await expect(page.getByText('Une erreur est apparu lors de la décrémentation:')).toBeVisible();
+	});
+
+	test('lorsque l‘appel est en succès, affiche un message de succès', async ({ page }) => {
+		await page.route('https://rpc-amoy.polygon.technology/', async route => {
+			await route.fulfill({ json: { jsonrpc: "2.0", id: 0, result: "0x" } });
+		});
+
+		await page.goto("/");
+		await page.getByRole("button", { name: "Mock Connector" }).click();
+
+		await page.getByRole("button", { name: "increment" }).click();
+
+		await expect(page.getByText('la décrémentation a bien fonctionnée')).toBeVisible();
 	});
 })
 

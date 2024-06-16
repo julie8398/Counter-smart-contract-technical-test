@@ -3,6 +3,6 @@ export enum Status {
 	SUCCESS = 'success',
 }
 
-export enum Connection_status {
+export enum ConnexionStatus {
 	CONNECTED = 'connected',
 }

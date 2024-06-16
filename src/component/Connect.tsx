@@ -1,5 +1,5 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import { Connection_status } from '@/utils/status';
+import { ConnexionStatus } from '@/utils/status';
 
 export function Connect() {
 	const account = useAccount()
@@ -9,18 +9,18 @@ export function Connect() {
 	return <>
 		<div>
 			<div>
-				<h2>Account</h2>
+				<h2>Compte</h2>
 				<div>status: {account.status}</div>
 				<div>addresses: {JSON.stringify(account.addresses)}</div>
 			</div>
-			{account.status === Connection_status.CONNECTED && (
+			{account.status === ConnexionStatus.CONNECTED && (
 				<button type="button" onClick={() => disconnect()}>
 					Disconnect
 				</button>
 			)}
 		</div>
 		<div>
-			<h2>Connect</h2>
+			<h2>Connexion</h2>
 			{connectors.map((connector) => (
 				<button key={connector.uid} onClick={() => connect({ connector })} type="button">
 					{connector.name}
