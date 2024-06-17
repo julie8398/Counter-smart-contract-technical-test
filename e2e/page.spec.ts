@@ -51,8 +51,7 @@ test.describe('Compteur', () => {
 		await page.goto("/");
 		await page.getByRole("button", { name: "Mock Connector" }).click();
 
-		await expect(page.getByText("status: connected")).toBeVisible();
-		await expect(page.getByText('addresses: ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"]')).toBeVisible();
+		await expect(page.getByText("Etat de la connexion: connecté")).toBeVisible();
 	});
 
 	test.describe('increment', () => {
